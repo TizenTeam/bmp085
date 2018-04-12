@@ -14,11 +14,6 @@ var BMP085 = function (opts) {
     self.options = _.extend({}, defaultOptions, opts);
     self.events = new EventEmitter();
     self.wire = new Wire(this.options.address, {device: this.options.device, debug: this.options.debug});
-
-    self.events.on('calibrated', function () {
-        self.readData(self.userCallback);
-    });
-
     debug = self.options.debug;
 };
 
@@ -151,14 +146,16 @@ BMP085.prototype.calibrate = function (callback) {
     this.waitForCalibrationData();
 
     var self = this;
-
+    var remaining = this.calibrationRegisters.length;
     this.calibrationRegisters.forEach(function(register) {
         self.readWord(register, function(err, reg, value) {
          if (err) {
              return callback(err);
          } else {
              self.calibrationData[reg.name] = value;
-             return callback(null);
+             if (--remaining == 0) {
+                 callback(null);
+             }
          }
         });
     });
@@ -284,7 +281,7 @@ BMP085.prototype.convertPressure = function (raw) {
 
 BMP085.prototype.read = function (callback) {
     this.userCallback = callback;
-    self.readData(self.userCallback);
+    this.readData(this.userCallback);
 };
 
 var log = function () {
