@@ -130,7 +130,7 @@ BMP085.prototype.readWord = function (register, length, callback) {
 
     self.wire.readBytes(register.location, length, function(err, bytes) {
         if (err) {
-            throw(err);
+            return callback(err);
         }
 
         var hi = bytes.readUInt8(0),
@@ -142,19 +142,24 @@ BMP085.prototype.readWord = function (register, length, callback) {
         }
 
         value = (hi << 8) + lo;
-        callback(register, value);
+        callback(null, register, value);
     });
 };
 
-BMP085.prototype.calibrate = function () {
+BMP085.prototype.calibrate = function (callback) {
     this.calibrationData = {};
     this.waitForCalibrationData();
 
     var self = this;
 
     this.calibrationRegisters.forEach(function(register) {
-        self.readWord(register, function(reg, value) {
-            self.calibrationData[reg.name] = value;
+        self.readWord(register, function(err, reg, value) {
+         if (err) {
+             return callback(err);
+         } else {
+             self.calibrationData[reg.name] = value;
+             return callback(null);
+         }
         });
     });
 };
@@ -279,7 +284,7 @@ BMP085.prototype.convertPressure = function (raw) {
 
 BMP085.prototype.read = function (callback) {
     this.userCallback = callback;
-    this.calibrate();
+    self.readData(self.userCallback);
 };
 
 var log = function () {
