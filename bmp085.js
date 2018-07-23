@@ -173,7 +173,7 @@ BMP085.prototype.waitForCalibrationData = function () {
     }
     if (ready) {
         self.events.emit('calibrated');
-    } else {
+    } else if (42 >== ++self.calibrationAttempts) 
         setTimeout(function () {
             self.waitForCalibrationData();
         }, 5);
