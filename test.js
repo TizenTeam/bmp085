@@ -1,26 +1,32 @@
-var Bmp085 = require('./bmp085'),
-    testStandardMode = function () {
-        var barometer = new Bmp085();
+var Bmp085 = require('./bmp085');
+
+
+var testUltraHighresMode = function () {
+        var barometer = new Bmp085({'mode':3});
         barometer.read(function (data) {
-            console.log("Standard mode", data);
-            testHighresMode();
+            console.log("Ultra highres mode", data);
         });
-    },
-    testHighresMode = function () {
+};
+
+
+var testHighresMode = function () {
         var barometer = new Bmp085({'mode':2});
         barometer.read(function (data) {
             console.log("Highres mode", data);
             testUltraHighresMode();
         });
 
-    },
-    testUltraHighresMode = function () {
-        var barometer = new Bmp085({'mode':3});
+};
+
+var testStandardMode = function () {
+        var barometer = new Bmp085();
         barometer.read(function (data) {
-            console.log("Ultra highres mode", data);
+            console.log("Standard mode", data);
+//            testHighresMode();
         });
-    },
-    startTest = function () {
+};
+
+var startTest = function () {
       try {
         testStandardMode();
       } catch (err) {
