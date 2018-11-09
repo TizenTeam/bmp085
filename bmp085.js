@@ -1,4 +1,4 @@
-var Wire = require('i2c.js'),
+var Wire = require('i2c'),
     EventEmitter = require('events').EventEmitter,
     debug,
     defaultOptions = {
